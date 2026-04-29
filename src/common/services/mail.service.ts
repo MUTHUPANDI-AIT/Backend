@@ -46,7 +46,13 @@ export class MailService {
     recipientEmail: string,
     images: string[] = [],
   ) {
-    await this.addToQueue('category', operation, category, recipientEmail, images);
+    await this.addToQueue(
+      'category',
+      operation,
+      category,
+      recipientEmail,
+      images,
+    );
   }
 
   async sendProductNotification(
@@ -55,10 +61,22 @@ export class MailService {
     recipientEmail: string,
     images: string[] = [],
   ) {
-    await this.addToQueue('product', operation, product, recipientEmail, images);
+    await this.addToQueue(
+      'product',
+      operation,
+      product,
+      recipientEmail,
+      images,
+    );
   }
 
-  private async addToQueue(type: 'category' | 'product', operation: string, data: any, recipientEmail: string, images: string[]) {
+  private async addToQueue(
+    type: 'category' | 'product',
+    operation: string,
+    data: any,
+    recipientEmail: string,
+    images: string[],
+  ) {
     if (!recipientEmail) {
       throw new Error('Recipient email is required.');
     }

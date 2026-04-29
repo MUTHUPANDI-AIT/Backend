@@ -14,7 +14,9 @@ const TARGET_MAP: Record<string, string> = {
 };
 
 function parseTargets(args: string[]) {
-  return args.map((arg) => TARGET_MAP[arg.replace(/^--?/, '').toLowerCase()] || '').filter(Boolean);
+  return args
+    .map((arg) => TARGET_MAP[arg.replace(/^--?/, '').toLowerCase()] || '')
+    .filter(Boolean);
 }
 
 function printUsage() {
@@ -29,10 +31,10 @@ function printUsage() {
 async function bootstrap() {
   // Create an application context rather than a full HTTP server
   const app = await NestFactory.createApplicationContext(AppModule);
-  
+
   // Retrieve the SeedService from the dependency injection container
   const seedService = app.get(SeedService);
-  
+
   const rawArgs = process.argv.slice(2).filter(Boolean);
   const targets = parseTargets(rawArgs);
   if (rawArgs.length > 0 && targets.length !== rawArgs.length) {
@@ -45,7 +47,7 @@ async function bootstrap() {
   const effectiveTargets = targets.length > 0 ? targets : ['all'];
 
   console.log('🌱 Starting database seed for:', effectiveTargets.join(', '));
-  
+
   try {
     await seedService.runSeed(effectiveTargets);
     console.log('✅ Database seed completed');

@@ -12,7 +12,7 @@ import { Product, ProductSchema } from '../products/schemas/product.schema';
 import { JWT_CONSTANTS } from './constants/user.constants';
 import { SeedService } from './seeds/seed.service';
 
-@Module({   
+@Module({
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },

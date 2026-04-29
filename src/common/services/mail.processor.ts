@@ -1,4 +1,9 @@
-import { Processor, Process, OnQueueCompleted, OnQueueFailed } from '@nestjs/bull';
+import {
+  Processor,
+  Process,
+  OnQueueCompleted,
+  OnQueueFailed,
+} from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Job } from 'bull';
@@ -17,9 +22,10 @@ export class MailProcessor {
     const { operation, type, data, recipientEmail, images } = job.data;
 
     // 1. Generate Content using the Service methods
-    const html = type === 'category' 
-      ? this.mailService.generateCategoryHtml(operation, data) 
-      : this.mailService.generateProductHtml(operation, data);
+    const html =
+      type === 'category'
+        ? this.mailService.generateCategoryHtml(operation, data)
+        : this.mailService.generateProductHtml(operation, data);
 
     const subject = `${type.charAt(0).toUpperCase() + type.slice(1)} ${operation.toUpperCase()} Notification`;
 

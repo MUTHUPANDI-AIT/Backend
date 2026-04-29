@@ -1,16 +1,14 @@
 // src/cron-queue/cron-queue.service.ts
 import { Injectable } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+// import { Cron } from '@nestjs/schedule';
 import { Queue } from 'bullmq';
 import Redis from 'ioredis';
-
 
 @Injectable()
 export class CronQueueService {
   private queue: Queue;
 
   constructor() {
-   
     const connection = new Redis();
     this.queue = new Queue('emailQueue', { connection });
   }

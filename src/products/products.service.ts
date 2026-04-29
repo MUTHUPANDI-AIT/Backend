@@ -47,7 +47,12 @@ export class ProductsService {
 
     const email = await this.getProductUserEmail(userId);
     if (email) {
-      await this.mailService.sendProductNotification('create', product, email, images);
+      await this.mailService.sendProductNotification(
+        'create',
+        product,
+        email,
+        images,
+      );
     }
 
     return product;
@@ -139,7 +144,12 @@ export class ProductsService {
 
     const email = await this.getProductUserEmail(updatedProduct.userId);
     if (email) {
-      await this.mailService.sendProductNotification('update', updatedProduct, email, images);
+      await this.mailService.sendProductNotification(
+        'update',
+        updatedProduct,
+        email,
+        images,
+      );
     }
 
     return updatedProduct;
@@ -155,7 +165,11 @@ export class ProductsService {
 
     const email = await this.getProductUserEmail(deletedProduct.userId);
     if (email) {
-      await this.mailService.sendProductNotification('delete', deletedProduct, email);
+      await this.mailService.sendProductNotification(
+        'delete',
+        deletedProduct,
+        email,
+      );
     }
 
     return {

@@ -6,11 +6,11 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ProductsModule } from './products/products.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { UsersModule } from './users/users.module';
-import { CategoriesModule } from './categories/categories.module';
+// import { CategoriesModule } from './categories/categories.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { CommonModule } from './common/common.module';
-import { CronQueueModule } from './cron-queue/cron-queue.module';
-import { OopsModule } from './oops/oops.module';
+// import { CronQueueModule } from './cron-queue/cron-queue.module';
+// import { OopsModule } from './oops/oops.module';
 
 @Module({
   imports: [

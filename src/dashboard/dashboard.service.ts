@@ -17,7 +17,9 @@ export class DashboardService {
 
     // Get product stats
     const totalProducts = await this.productModel.countDocuments();
-    const userProducts = await this.productModel.countDocuments({ createdBy: userId });
+    const userProducts = await this.productModel.countDocuments({
+      createdBy: userId,
+    });
 
     // Get recent products
     const recentProducts = await this.productModel

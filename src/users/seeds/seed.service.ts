@@ -5,7 +5,10 @@ import { Model } from 'mongoose';
 
 import { Role } from '../schemas/role.schema';
 import { User, UserDocument, UserRole } from '../schemas/user.schema';
-import { Product, ProductDocument } from '../../products/schemas/product.schema';
+import {
+  Product,
+  ProductDocument,
+} from '../../products/schemas/product.schema';
 import { seedRoles } from './roles.seed';
 import { usersSeed } from './users.seed';
 import { productsSeed } from '../../products/seeds/products.seed';
@@ -65,12 +68,16 @@ export class SeedService {
   private async seedProducts() {
     await this.seedUsersIfEmpty();
 
-    const adminUser = await this.userModel.findOne({ email: 'admin@example.com' });
+    const adminUser = await this.userModel.findOne({
+      email: 'admin@example.com',
+    });
     const fallbackUser = await this.userModel.findOne();
     const userId = adminUser?._id.toString() ?? fallbackUser?._id.toString();
 
     if (!userId) {
-      throw new Error('Unable to seed products because no user exists. Run roles and users seed first.');
+      throw new Error(
+        'Unable to seed products because no user exists. Run roles and users seed first.',
+      );
     }
 
     for (const product of productsSeed) {

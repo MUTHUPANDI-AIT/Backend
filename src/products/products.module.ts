@@ -12,9 +12,7 @@ import { CommonModule } from '../common/common.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: Product.name, schema: ProductSchema },
-    ]),
+    MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
     JwtModule.register({
       secret: JWT_CONSTANTS.SECRET,
       signOptions: { expiresIn: JWT_CONSTANTS.EXPIRES_IN },

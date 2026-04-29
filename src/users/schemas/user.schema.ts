@@ -7,7 +7,7 @@ export type UserDocument = User & Document;
 export enum UserRole {
   ADMIN = 'admin',
   USER = 'user',
-  EMPLOYEE = 'employee'
+  EMPLOYEE = 'employee',
 }
 
 @Schema({ timestamps: true })
@@ -23,8 +23,8 @@ export class User {
 
   // ✅ UPDATED: Established connection to Role schema by ID
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: false })
-  role: Role | mongoose.Types.ObjectId; 
-  
+  role: Role | mongoose.Types.ObjectId;
+
   @Prop({ default: true })
   isActive: boolean;
 }

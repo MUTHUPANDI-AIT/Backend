@@ -1,4 +1,3 @@
-
 import { Worker } from 'bullmq';
 import Redis from 'ioredis';
 
@@ -9,5 +8,5 @@ new Worker(
   async (job) => {
     console.log('Processing job:', job.data);
   },
-  { connection }
+  { connection },
 );

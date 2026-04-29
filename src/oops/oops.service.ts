@@ -1,9 +1,7 @@
-
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class OopsService {
-
   // Encapsulation
   getEncapsulation() {
     const acc = new BankAccount(1000);
@@ -71,7 +69,10 @@ class Circle extends Shape {
 }
 
 class Rectangle extends Shape {
-  constructor(private width: number, private height: number) {
+  constructor(
+    private width: number,
+    private height: number,
+  ) {
     super();
   }
 

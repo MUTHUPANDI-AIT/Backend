@@ -18,7 +18,7 @@ export function Auth(...roles: UserRole[]) {
 
 // 1. JWT Verification Only (No specific role required)
 // This will verify the token and attach the user to the request.
-export const AuthOnly = Auth(); 
+export const AuthOnly = Auth();
 
 // 2. Admin Only Access
 export const AdminOnly = Auth(UserRole.ADMIN);

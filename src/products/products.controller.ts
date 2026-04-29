@@ -94,9 +94,8 @@ export class ProductsController {
     return this.service.update(id, dto, images);
   }
 
-
   @Delete(':id')
-  @Auth(UserRole.ADMIN , UserRole.EMPLOYEE)
+  @Auth(UserRole.ADMIN, UserRole.EMPLOYEE)
   delete(@Param('id') id: string) {
     return this.service.delete(id);
   }

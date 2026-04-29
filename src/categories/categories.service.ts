@@ -23,9 +23,18 @@ export class CategoriesService {
   // CREATE
   async create(images: string[], dto: CreateCategoryDto, userId: string) {
     try {
-      const category = await this.categoryModel.create({ ...dto, images, userId });
+      const category = await this.categoryModel.create({
+        ...dto,
+        images,
+        userId,
+      });
       const recipientEmail = await this.getCategoryUserEmail(userId);
-      await this.mailService.sendCategoryNotification('create', category, recipientEmail, images);
+      await this.mailService.sendCategoryNotification(
+        'create',
+        category,
+        recipientEmail,
+        images,
+      );
       return category;
     } catch (error) {
       throw error;
@@ -51,7 +60,11 @@ export class CategoriesService {
       const skip = (page - 1) * limit;
       const total = await this.categoryModel.countDocuments(filter);
 
-      const categories = await this.categoryModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit);
+      const categories = await this.categoryModel
+        .find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
 
       return {
         data: categories,
@@ -91,8 +104,15 @@ export class CategoriesService {
       if (!updatedCategory) {
         return { message: 'Category not found' };
       }
-      const recipientEmail = await this.getCategoryUserEmail(updatedCategory.userId);
-      await this.mailService.sendCategoryNotification('update', updatedCategory, recipientEmail, images);
+      const recipientEmail = await this.getCategoryUserEmail(
+        updatedCategory.userId,
+      );
+      await this.mailService.sendCategoryNotification(
+        'update',
+        updatedCategory,
+        recipientEmail,
+        images,
+      );
       return updatedCategory;
     } catch (error) {
       throw error;
@@ -106,8 +126,14 @@ export class CategoriesService {
       if (!deletedCategory) {
         return { message: 'Category not found' };
       }
-      const recipientEmail = await this.getCategoryUserEmail(deletedCategory.userId);
-      await this.mailService.sendCategoryNotification('delete', deletedCategory, recipientEmail);
+      const recipientEmail = await this.getCategoryUserEmail(
+        deletedCategory.userId,
+      );
+      await this.mailService.sendCategoryNotification(
+        'delete',
+        deletedCategory,
+        recipientEmail,
+      );
       return {
         message: `${deletedCategory.name} removed successfully`,
       };

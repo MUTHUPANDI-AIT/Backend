@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument, UserRole } from './schemas/user.schema';
@@ -31,40 +36,45 @@ export class UsersService {
 
     if (rolesCount > 0) {
       // Default to 'user' role automatically
-      const defaultRole = UserRole.USER; 
+      const defaultRole = UserRole.USER;
       roleDoc = await this.roleModel.findOne({ name: defaultRole });
       if (!roleDoc) {
-        throw new BadRequestException(`Default role '${defaultRole}' not found in database.`);
+        throw new BadRequestException(
+          `Default role '${defaultRole}' not found in database.`,
+        );
       }
       roleName = roleDoc.name;
     }
 
     // 3. Hash password and save user
     const hash = await bcrypt.hash(dto.password, 10);
-    const user = await this.userModel.create({ 
-      ...dto, 
-      password: hash, 
-      role: roleDoc ? roleDoc._id : undefined 
+    const user = await this.userModel.create({
+      ...dto,
+      password: hash,
+      role: roleDoc ? roleDoc._id : undefined,
     });
 
     // 4. Sign token
-    const token = this.jwtService.sign(
-{ sub: user._id, 
-role: roleName, 
-email: user.email, 
-name: user.name });
+    const token = this.jwtService.sign({
+      sub: user._id,
+      role: roleName,
+      email: user.email,
+      name: user.name,
+    });
 
-    return { 
-      message: USER_MESSAGES.REGISTER_SUCCESS, 
-      token, 
-      role: roleName 
+    return {
+      message: USER_MESSAGES.REGISTER_SUCCESS,
+      token,
+      role: roleName,
     };
   }
 
   async login(dto: LoginUserDto) {
     // 1. Find user and POPULATE role to get the role name
-    const user = await this.userModel.findOne({ email: dto.email }).populate('role');
-    
+    const user = await this.userModel
+      .findOne({ email: dto.email })
+      .populate('role');
+
     if (!user) {
       throw new UnauthorizedException(USER_MESSAGES.USER_NOT_FOUND);
     }
@@ -76,16 +86,21 @@ name: user.name });
     }
 
     // 3. Extract role name for the JWT payload (null if no role)
-    const populatedRole = user.role as any; 
-    const roleName = populatedRole ? populatedRole.name : null; 
+    const populatedRole = user.role as any;
+    const roleName = populatedRole ? populatedRole.name : null;
 
     // 4. Sign token so Guards can verify it
-    const token = this.jwtService.sign({ sub: user._id, role: roleName, email: user.email, name: user.name });
+    const token = this.jwtService.sign({
+      sub: user._id,
+      role: roleName,
+      email: user.email,
+      name: user.name,
+    });
 
-    return { 
-      message: USER_MESSAGES.LOGIN_SUCCESS, 
-      token, 
-      role: roleName 
+    return {
+      message: USER_MESSAGES.LOGIN_SUCCESS,
+      token,
+      role: roleName,
     };
   }
 
