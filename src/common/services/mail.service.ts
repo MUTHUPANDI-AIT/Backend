@@ -3,12 +3,14 @@ import { ConfigService } from '@nestjs/config';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import * as nodemailer from 'nodemailer';
+import { Category } from '../../categories/schemas/category.schema';
+import { Product } from '../../products/schemas/product.schema';
 
 // Define the shape of the data being sent to the queue
 export interface MailJobData {
   operation: 'create' | 'update' | 'delete';
   type: 'category' | 'product';
-  data: any;
+  data: Category | Product;
   recipientEmail: string;
   images?: string[];
 }
@@ -42,7 +44,7 @@ export class MailService {
 
   async sendCategoryNotification(
     operation: 'create' | 'update' | 'delete',
-    category: any,
+    category: Category,
     recipientEmail: string,
     images: string[] = [],
   ) {
@@ -57,7 +59,7 @@ export class MailService {
 
   async sendProductNotification(
     operation: 'create' | 'update' | 'delete',
-    product: any,
+    product: Product,
     recipientEmail: string,
     images: string[] = [],
   ) {
@@ -73,7 +75,7 @@ export class MailService {
   private async addToQueue(
     type: 'category' | 'product',
     operation: string,
-    data: any,
+    data: Category | Product,
     recipientEmail: string,
     images: string[],
   ) {
@@ -92,7 +94,7 @@ export class MailService {
     console.log(`${type} notification added to queue`);
   }
 
-  public generateProductHtml(operation: string, product: any): string {
+  public generateProductHtml(operation: string, product: Product): string {
     const themes = {
       create: { color: '#28a745', bg: '#d4edda' },
       update: { color: '#007bff', bg: '#cce7ff' },
@@ -111,7 +113,7 @@ export class MailService {
     `;
   }
 
-  public generateCategoryHtml(operation: string, category: any): string {
+  public generateCategoryHtml(operation: string, category: Category): string {
     const themes = {
       create: { color: '#28a745', bg: '#d4edda' },
       update: { color: '#007bff', bg: '#cce7ff' },

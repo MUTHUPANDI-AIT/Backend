@@ -1,11 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Category } from './schemas/category.schema';
-import { Model } from 'mongoose';
+import { Model, FilterQuery } from 'mongoose';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { MailService } from '../common/services';
 import { UsersService } from '../users/users.service';
+
+interface CategoryQuery {
+  name?: string;
+  startDate?: string;
+  endDate?: string;
+  page?: string | number;
+  limit?: string | number;
+}
 
 @Injectable()
 export class CategoriesService {
@@ -42,9 +50,9 @@ export class CategoriesService {
   }
 
   // GET ALL with filters and pagination
-  async findAll(query: any) {
+  async findAll(query: CategoryQuery) {
     try {
-      const filter: any = {};
+      const filter: FilterQuery<Category> = {};
       if (query.name) {
         filter.name = { $regex: query.name, $options: 'i' };
       }

@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  Matches,
   IsString,
   IsOptional,
   IsEnum,
@@ -9,8 +10,11 @@ import {
 import { UserRole } from '../schemas/user.schema';
 
 export class CreateUserDto {
-  @IsEmail()
   @IsNotEmpty()
+  @IsEmail()
+  @Matches(/^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com)$/, {
+    message: 'Email format is invalid',
+  })
   readonly email: string;
 
   @IsString()

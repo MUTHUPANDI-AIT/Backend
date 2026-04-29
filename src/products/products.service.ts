@@ -1,13 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './schemas/product.schema';
-import { Model } from 'mongoose';
+import { Model, FilterQuery } from 'mongoose';
 import { Cron } from '@nestjs/schedule';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { USER_MESSAGES } from '../users/constants/user.constants';
 import { MailService } from '../common/services/mail.service';
 import { UsersService } from '../users/users.service';
+
+interface ProductQuery {
+  name?: string;
+  stock?: string | number | boolean;
+  startDate?: string;
+  endDate?: string;
+  page?: string | number;
+  limit?: string | number;
+}
 
 @Injectable()
 export class ProductsService {
@@ -59,9 +68,9 @@ export class ProductsService {
   }
 
   // GET ALL (optimized filtering)
-  async findAll(query: any) {
+  async findAll(query: ProductQuery) {
     try {
-      const filter: any = {};
+      const filter: FilterQuery<Product> = {};
 
       if (query.name) {
         filter.name = { $regex: query.name, $options: 'i' };

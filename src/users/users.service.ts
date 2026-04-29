@@ -86,8 +86,14 @@ export class UsersService {
     }
 
     // 3. Extract role name for the JWT payload (null if no role)
-    const populatedRole = user.role as any;
-    const roleName = populatedRole ? populatedRole.name : null;
+    const roleName =
+      typeof user.role === 'object' && user.role !== null && 'name' in user.role
+        ? (user.role as Role).name
+        : null;
+    //   const roleId =
+    // user.role && typeof user.role === 'object'
+    //   ? (user.role as Role)._id
+    //   : user.role;
 
     // 4. Sign token so Guards can verify it
     const token = this.jwtService.sign({
@@ -95,12 +101,14 @@ export class UsersService {
       role: roleName,
       email: user.email,
       name: user.name,
+      // roleid: roleId,
     });
 
     return {
       message: USER_MESSAGES.LOGIN_SUCCESS,
       token,
       role: roleName,
+      // roleid: roleId,
     };
   }
 

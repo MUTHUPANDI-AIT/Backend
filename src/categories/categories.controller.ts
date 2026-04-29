@@ -33,6 +33,14 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
+interface CategoryQuery {
+  name?: string;
+  startDate?: string;
+  endDate?: string;
+  page?: string | number;
+  limit?: string | number;
+}
+
 @Controller('categories')
 @UseGuards(AuthGuard)
 export class CategoriesController {
@@ -64,7 +72,7 @@ export class CategoriesController {
 
   // GET ALL + FILTERS
   @Get()
-  findAll(@Query() query: any) {
+  findAll(@Query() query: CategoryQuery) {
     return this.service.findAll(query);
   }
 

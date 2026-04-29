@@ -1,4 +1,3 @@
-// products.controller.ts
 import {
   Controller,
   Get,
@@ -31,6 +30,15 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
+interface ProductQuery {
+  name?: string;
+  stock?: string | number | boolean;
+  startDate?: string;
+  endDate?: string;
+  page?: string | number;
+  limit?: string | number;
+}
+
 @Controller('products')
 export class ProductsController {
   constructor(private readonly service: ProductsService) {}
@@ -61,7 +69,7 @@ export class ProductsController {
   // READ ALL: Only requires a valid login
   @Get()
   @Auth()
-  findAll(@Query() query: any) {
+  findAll(@Query() query: ProductQuery) {
     return this.service.findAll(query);
   }
 
