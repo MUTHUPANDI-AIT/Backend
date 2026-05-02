@@ -7,12 +7,20 @@ import { Category } from '../../categories/schemas/category.schema';
 import { Product } from '../../products/schemas/product.schema';
 
 // Define the shape of the data being sent to the queue
+export type MailImagePayload =
+  | string
+  | {
+      filename: string;
+      mimetype?: string;
+      data: Buffer;
+    };
+
 export interface MailJobData {
   operation: 'create' | 'update' | 'delete';
   type: 'category' | 'product';
   data: Category | Product;
   recipientEmail: string;
-  images?: string[];
+  images?: MailImagePayload[];
 }
 
 @Injectable()
@@ -46,7 +54,7 @@ export class MailService {
     operation: 'create' | 'update' | 'delete',
     category: Category,
     recipientEmail: string,
-    images: string[] = [],
+    images: MailImagePayload[] = [],
   ) {
     await this.addToQueue(
       'category',
@@ -61,7 +69,7 @@ export class MailService {
     operation: 'create' | 'update' | 'delete',
     product: Product,
     recipientEmail: string,
-    images: string[] = [],
+    images: MailImagePayload[] = [],
   ) {
     await this.addToQueue(
       'product',
@@ -77,7 +85,7 @@ export class MailService {
     operation: string,
     data: Category | Product,
     recipientEmail: string,
-    images: string[],
+    images: MailImagePayload[],
   ) {
     if (!recipientEmail) {
       throw new Error('Recipient email is required.');

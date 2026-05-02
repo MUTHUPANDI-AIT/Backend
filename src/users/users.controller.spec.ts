@@ -12,11 +12,25 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 
+import { JwtService } from '@nestjs/jwt';
+
+import {
+  IUserPayload,
+  IRegisterResponse,
+  ILoginResponse,
+} from './interfaces/user.interface';
+
 /* ------------------ MOCK SERVICE ------------------ */
 
 const mockUsersService = {
   register: jest.fn() as jest.MockedFunction<UsersService['register']>,
   login: jest.fn() as jest.MockedFunction<UsersService['login']>,
+  findOne: jest.fn() as jest.MockedFunction<UsersService['findOne']>,
+};
+
+const mockJwtService = {
+  verify: jest.fn(),
+  sign: jest.fn(),
 };
 
 /* ------------------ TEST SUITE ------------------ */
@@ -28,7 +42,10 @@ describe('UsersController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [{ provide: UsersService, useValue: mockUsersService }],
+      providers: [
+        { provide: UsersService, useValue: mockUsersService },
+        { provide: JwtService, useValue: mockJwtService },
+      ],
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
@@ -49,10 +66,12 @@ describe('UsersController', () => {
         name: 'Test User',
       };
 
-      const response = {
+      const response: IRegisterResponse = {
         message: 'User registered successfully',
         token: 'jwt-token',
         role: 'USER',
+        name: 'Test User',
+        userId: 'some-id',
       };
 
       service.register.mockResolvedValue(response);
@@ -87,10 +106,12 @@ describe('UsersController', () => {
         password: '123456',
       };
 
-      const response = {
+      const response: ILoginResponse = {
         message: 'Login successful',
         token: 'jwt-token',
         role: 'USER',
+        name: 'Test User',
+        userId: 'some-id',
       };
 
       service.login.mockResolvedValue(response);
@@ -112,6 +133,28 @@ describe('UsersController', () => {
       await expect(controller.login(dto)).rejects.toThrow(
         'Invalid credentials',
       );
+    });
+  });
+
+  /* ------------------ GET PROFILE ------------------ */
+
+  describe('getProfile', () => {
+    it('should return user object from request', () => {
+      const user: IUserPayload = {
+        _id: 'user-id',
+        name: 'Test User',
+        email: 'test@test.com',
+        role: 'user',
+        role_id: 'role-id',
+      };
+
+      const result = controller.getProfile(user);
+
+      expect(result).toEqual({
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      });
     });
   });
 });

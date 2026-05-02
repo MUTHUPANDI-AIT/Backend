@@ -1,7 +1,10 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
+import { AuthOnly } from './auth.decorator';
+import { GetUser } from './get-user.decorator';
+import { IUserPayload } from './interfaces/user.interface';
 
 @Controller('users')
 export class UsersController {
@@ -15,5 +18,15 @@ export class UsersController {
   @Post('login')
   async login(@Body() dto: LoginUserDto) {
     return this.usersService.login(dto);
+  }
+
+  @Get('profile')
+  @AuthOnly
+  getProfile(@GetUser() user: IUserPayload) {
+    return {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+    };
   }
 }

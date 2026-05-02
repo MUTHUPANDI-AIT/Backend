@@ -10,6 +10,7 @@ import { Request } from 'express';
 import { JWT_CONSTANTS, USER_MESSAGES } from './constants/user.constants';
 import { UsersService } from './users.service';
 import { Role } from './schemas/role.schema';
+import { IUserPayload } from './interfaces/user.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -40,14 +41,15 @@ export class AuthGuard implements CanActivate {
 
       // Extract role and attach user object to request for RolesGuard and Controller use
       const roleName = user.role ? (user.role as Role).name : null;
-      const roleId = user._id;
-      req['user'] = {
-        _id: user._id,
+      const roleId = user.role ? (user.role as Role)._id : '';
+      const payload: IUserPayload = {
+        _id: user._id.toString(),
         email: user.email,
         name: user.name,
         role: roleName,
-        role_id: roleId,
+        role_id: roleId ? roleId.toString() : '',
       };
+      req['user'] = payload;
 
       return true;
     } catch {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './schemas/product.schema';
 import { Model, FilterQuery } from 'mongoose';
@@ -8,6 +8,24 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { USER_MESSAGES } from '../users/constants/user.constants';
 import { MailService } from '../common/services/mail.service';
 import { UsersService } from '../users/users.service';
+import { ConfigService } from '@nestjs/config';
+
+export interface ProductImagePayload {
+  filename: string;
+  mimetype: string;
+  data: Buffer;
+}
+
+export interface NormalizedProductImage {
+  filename: string;
+  mimetype: string;
+  url: string;
+}
+
+export interface NormalizedProduct extends Omit<Product, 'images'> {
+  _id: string;
+  images: NormalizedProductImage[];
+}
 
 interface ProductQuery {
   name?: string;
@@ -24,6 +42,7 @@ export class ProductsService {
     @InjectModel(Product.name) private productModel: Model<Product>,
     private mailService: MailService,
     private usersService: UsersService,
+    private configService: ConfigService,
   ) {}
 
   private async getProductUserEmail(userId: string) {
@@ -51,7 +70,11 @@ export class ProductsService {
   }
 
   // CREATE
-  async create(images: string[], dto: CreateProductDto, userId: string) {
+  async create(
+    images: ProductImagePayload[],
+    dto: CreateProductDto,
+    userId: string,
+  ) {
     const product = await this.productModel.create({ ...dto, images, userId });
 
     const email = await this.getProductUserEmail(userId);
@@ -64,7 +87,17 @@ export class ProductsService {
       );
     }
 
-    return product;
+    // Normalize response images
+    const baseUrl =
+      this.configService.get<string>('API_URL') || 'http://localhost:3000';
+    const productObj = product.toObject() as unknown as NormalizedProduct;
+    productObj.images = (product.images || []).map((img, idx) => ({
+      filename: img.filename,
+      mimetype: img.mimetype,
+      url: `${baseUrl}/products/${productObj._id}/images/${idx}`,
+    }));
+
+    return productObj as NormalizedProduct;
   }
 
   // GET ALL (optimized filtering)
@@ -114,8 +147,20 @@ export class ProductsService {
         .skip(skip)
         .limit(limit);
 
+      const baseUrl =
+        this.configService.get<string>('API_URL') || 'http://localhost:3000';
+      const normalizedData = products.map((product) => {
+        const productObj = product.toObject() as unknown as NormalizedProduct;
+        productObj.images = (product.images || []).map((img, idx) => ({
+          filename: img.filename,
+          mimetype: img.mimetype,
+          url: `${baseUrl}/products/${productObj._id}/images/${idx}`,
+        }));
+        return productObj;
+      });
+
       return {
-        data: products,
+        data: normalizedData,
         total,
         currentPage: page,
         totalPages,
@@ -136,11 +181,42 @@ export class ProductsService {
       return { message: USER_MESSAGES.USER_NOT_FOUND };
     }
 
-    return product;
+    const baseUrl =
+      this.configService.get<string>('API_URL') || 'http://localhost:3000';
+    const productObj = product.toObject() as unknown as NormalizedProduct;
+    productObj.images = (product.images || []).map((img, idx) => ({
+      filename: img.filename,
+      mimetype: img.mimetype,
+      url: `${baseUrl}/products/${productObj._id}/images/${idx}`,
+    }));
+
+    return productObj;
+  }
+
+  async getImage(id: string, index: number) {
+    const product = await this.productModel.findById(id);
+
+    if (!product) {
+      throw new NotFoundException(USER_MESSAGES.USER_NOT_FOUND);
+    }
+
+    const image = product.images?.[index];
+    if (!image || !image.data) {
+      throw new NotFoundException('Product image not found');
+    }
+
+    return {
+      mimetype: image.mimetype,
+      data: Buffer.from(image.data),
+    };
   }
 
   // UPDATE
-  async update(id: string, dto: UpdateProductDto, images?: string[]) {
+  async update(
+    id: string,
+    dto: UpdateProductDto,
+    images?: ProductImagePayload[],
+  ) {
     const updatedProduct = await this.productModel.findByIdAndUpdate(
       id,
       { ...dto, ...(images && { images }) },
@@ -161,7 +237,18 @@ export class ProductsService {
       );
     }
 
-    return updatedProduct;
+    // Normalize response images
+    const baseUrl =
+      this.configService.get<string>('API_URL') || 'http://localhost:3000';
+    const productObj =
+      updatedProduct.toObject() as unknown as NormalizedProduct;
+    productObj.images = (updatedProduct.images || []).map((img, idx) => ({
+      filename: img.filename,
+      mimetype: img.mimetype,
+      url: `${baseUrl}/products/${productObj._id}/images/${idx}`,
+    }));
+
+    return productObj as NormalizedProduct;
   }
 
   // DELETE

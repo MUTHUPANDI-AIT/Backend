@@ -3,6 +3,20 @@ import { Document } from 'mongoose';
 
 export type ProductDocument = Product & Document;
 
+@Schema()
+export class ProductImage {
+  @Prop({ required: true })
+  filename: string;
+
+  @Prop({ required: true })
+  mimetype: string;
+
+  @Prop({ type: Buffer, required: true })
+  data: Buffer;
+}
+
+export const ProductImageSchema = SchemaFactory.createForClass(ProductImage);
+
 @Schema({ timestamps: true })
 export class Product {
   @Prop({ required: true })
@@ -20,8 +34,8 @@ export class Product {
   @Prop()
   category?: string;
 
-  @Prop([String])
-  images?: string[];
+  @Prop({ type: [ProductImageSchema], default: [] })
+  images?: ProductImage[];
 
   // optional fields
   // @Prop([String])

@@ -3,6 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BullModule } from '@nestjs/bull';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { resolve } from 'path';
 import { ProductsModule } from './products/products.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { UsersModule } from './users/users.module';
@@ -17,6 +19,10 @@ import { CommonModule } from './common/common.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [`.env.${process.env.NODE_ENV || 'development'}`, '.env'],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: resolve(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

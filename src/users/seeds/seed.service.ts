@@ -80,12 +80,27 @@ export class SeedService {
       );
     }
 
+    // Dummy 1x1 transparent GIF as a placeholder for seeded images
+    const dummyImageBuffer = Buffer.from(
+      'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+      'base64',
+    );
+
     for (const product of productsSeed) {
+      const processedImages = (product.images || []).map(
+        (img: { filename: string; mimetype: string }) => ({
+          filename: img.filename,
+          mimetype: img.mimetype || 'image/gif',
+          data: dummyImageBuffer,
+        }),
+      );
+
       await this.productModel.updateOne(
         { name: product.name },
         {
           $setOnInsert: {
             ...product,
+            images: processedImages,
             userId,
           },
         },

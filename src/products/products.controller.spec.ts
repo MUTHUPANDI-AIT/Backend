@@ -109,7 +109,13 @@ describe('ProductsController', () => {
       const result = await controller.create(files, dto, req);
 
       expect(mockProductsService.create).toHaveBeenCalledWith(
-        ['uploads/img1.png'],
+        [
+          {
+            filename: 'img1.png',
+            mimetype: 'image/png',
+            data: Buffer.from(''),
+          },
+        ],
         dto,
         'user123',
       );
@@ -150,7 +156,7 @@ describe('ProductsController', () => {
 
   describe('findAll', () => {
     it('should return all products with query', async () => {
-      const query = { category: 'electronics', limit: 10 };
+      const query = { category: 'electronics', limit: '10' };
       const products = [{ id: '1', name: 'Product1' }];
 
       mockProductsService.findAll.mockResolvedValue(products as never);
@@ -222,7 +228,11 @@ describe('ProductsController', () => {
       const result = await controller.update('1', files, dto);
 
       expect(mockProductsService.update).toHaveBeenCalledWith('1', dto, [
-        'uploads/img2.png',
+        {
+          filename: 'img2.png',
+          mimetype: 'image/png',
+          data: Buffer.from(''),
+        },
       ]);
 
       expect(result).toEqual(updatedProduct);

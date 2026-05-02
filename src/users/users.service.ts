@@ -66,6 +66,8 @@ export class UsersService {
       message: USER_MESSAGES.REGISTER_SUCCESS,
       token,
       role: roleName,
+      name: user.name,
+      userId: user._id,
     };
   }
 
@@ -108,7 +110,8 @@ export class UsersService {
       message: USER_MESSAGES.LOGIN_SUCCESS,
       token,
       role: roleName,
-      // roleid: roleId,
+      name: user.name,
+      userId: user._id,
     };
   }
 
