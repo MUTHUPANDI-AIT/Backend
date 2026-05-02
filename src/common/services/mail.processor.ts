@@ -42,7 +42,7 @@ export class MailProcessor {
 
       return {
         filename: image.filename,
-        content: image.data,
+        content: Buffer.from(image.data as unknown as ArrayBuffer),
         contentType: image.mimetype,
       };
     });
