@@ -1,3 +1,7 @@
+import * as crypto from 'crypto';
+if (!globalThis.crypto) {
+  Object.assign(globalThis, { crypto: crypto.webcrypto });
+}
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';

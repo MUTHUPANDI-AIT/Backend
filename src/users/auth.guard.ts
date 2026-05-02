@@ -41,9 +41,9 @@ export class AuthGuard implements CanActivate {
 
       // Extract role and attach user object to request for RolesGuard and Controller use
       const roleName = user.role ? (user.role as Role).name : null;
-      const roleId = user.role ? (user.role as any)._id : '';
+      const roleId = user.role ? (user.role as { _id: unknown })._id : '';
       const payload: IUserPayload = {
-        _id: user._id.toString(),
+        _id: String((user as { _id: unknown })._id),
         email: user.email,
         name: user.name,
         role: roleName,
